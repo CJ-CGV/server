@@ -1,15 +1,11 @@
 package com.cj.cgv.domain.seat;
 
-import com.cj.cgv.domain.member.Member;
-import com.cj.cgv.domain.movie.Movie;
 import com.cj.cgv.domain.schedule.Schedule;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -20,11 +16,11 @@ public class Seat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Integer row;
+    @Column(name = "row_index",nullable = false)
+    private Integer rowIndex;
 
-    @Column(nullable = false)
-    private Integer column;
+    @Column(name = "column_index",nullable = false)
+    private Integer columnIndex;
 
     @Column(name = "is_reserved", nullable = false)
     private Boolean isReserved;
@@ -35,10 +31,12 @@ public class Seat {
 
 
     @Builder
-    public Seat(Integer row, Integer column, Boolean isReserved, Schedule schedule) {
-        this.row = row;
-        this.column = column;
+    public Seat(Integer rowIndex, Integer columnIndex, Boolean isReserved, Schedule schedule) {
+        this.rowIndex = rowIndex;
+        this.columnIndex = columnIndex;
         this.isReserved = isReserved;
         this.schedule = schedule;
     }
+
+    public void soldout(){this.isReserved=true;}
 }

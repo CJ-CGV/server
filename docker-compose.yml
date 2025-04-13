@@ -1,0 +1,17 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: cgvMysql
+    environment:
+      MYSQL_ROOT_PASSWORD: test123
+      MYSQL_DATABASE: cgvDB       # ✅ 이 한 줄이 DB 생성
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: test123
+    ports:
+      - "3307:3306"
+    volumes:
+      - cgv_data:/var/lib/mysql
+
+
+volumes:
+  cgv_data:

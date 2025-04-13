@@ -40,4 +40,6 @@ public class Reservation {
         this.seat = seat;
         this.member = member;
     }
+
+    public void cancel(){ this.status=Status.CANCELED; }
 }

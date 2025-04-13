@@ -7,10 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Time;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -27,13 +24,9 @@ public class Movie {
     @Column(name = "release_date", nullable = false)
     private LocalDate releaseDate;
 
-    @Column(nullable = false)
-    private String image;
-
     @Builder
-    public Movie(String title, LocalDate releaseDate, String image) {
+    public Movie(String title, LocalDate releaseDate) {
         this.title = title;
         this.releaseDate = releaseDate;
-        this.image = image;
     }
 }
