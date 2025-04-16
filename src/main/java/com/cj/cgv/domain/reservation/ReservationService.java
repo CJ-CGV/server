@@ -1,8 +1,6 @@
 package com.cj.cgv.domain.reservation;
 
 
-import com.cj.cgv.domain.member.Member;
-import com.cj.cgv.domain.member.MemberRepository;
 import com.cj.cgv.domain.reservation.dto.ReservationRes;
 import com.cj.cgv.domain.seat.Seat;
 import com.cj.cgv.domain.seat.SeatRepository;
@@ -19,12 +17,10 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ReservationService {
     private final ReservationRepository reservationRepository;
-    private final MemberRepository memberRepository;
     private final SeatRepository seatRepository;
 
     @Transactional
-    public ReservationRes createReservation(Long memberId, Long seatId){
-        Member member=findMemberByMemberId(memberId);
+    public ReservationRes createReservation(String userName, Long seatId){
         Seat seat=findSeatBySeatId(seatId);
 
         if(!seat.getIsReserved())
@@ -32,8 +28,8 @@ public class ReservationService {
         else throw new CustomException(StatusCode.SEAT_SOLD_OUT);
 
         Reservation reservation= Reservation.builder()
+                .userName(userName)
                 .status(Status.RESERVED)
-                .member(member)
                 .seat(seat)
                 .build();
 
@@ -58,13 +54,7 @@ public class ReservationService {
             reservation.cancel();
         else throw new CustomException(StatusCode.RESERVATION_IS_DELETED);
     }
-
-
-
-    private Member findMemberByMemberId(Long memberId){
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(StatusCode.MEMBER_NOT_EXIST));
-    }
+    
 
     private Seat findSeatBySeatId(Long seatId){
         return seatRepository.findById(seatId)

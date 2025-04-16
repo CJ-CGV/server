@@ -23,12 +23,12 @@ public class ReservationController {
     @Operation(summary = "예매 생성", description = "1개의 예매를 생성합니다.")
     @PostMapping
     public ResponseEntity<CommonResponse<ReservationRes>> createReservation(
-            @RequestParam Long memberId,
+            @RequestParam String userName,
             @RequestParam Long seatId) {
         return ResponseEntity
                 .status(RESERVATION_CREATE.getStatus())
                 .body(CommonResponse.from(RESERVATION_CREATE.getMessage(),
-                        reservationService.createReservation(memberId,seatId)));
+                        reservationService.createReservation(userName,seatId)));
     }
 
     @Operation(summary = "예매내역 조회", description = "나의 모든 예매 내역을 조회합니다.")
