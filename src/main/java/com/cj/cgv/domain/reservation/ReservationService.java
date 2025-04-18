@@ -37,8 +37,8 @@ public class ReservationService {
         return ReservationRes.from(reservationRepository.save(reservation));
     }
 
-    public List<ReservationRes> getReservationList(Long memberId){
-        List<Reservation> reservations= reservationRepository.findAllByMember_Id(memberId);
+    public List<ReservationRes> getReservationList(String userName){
+        List<Reservation> reservations= reservationRepository.findAllByUserName(userName);
 
         return reservations.stream()
                 .map(ReservationRes::from)

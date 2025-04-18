@@ -34,11 +34,11 @@ public class ReservationController {
     @Operation(summary = "예매내역 조회", description = "나의 모든 예매 내역을 조회합니다.")
     @GetMapping
     public ResponseEntity<CommonResponse<List<ReservationRes>>> getReservationList(
-            @RequestParam Long memberId) {
+            @RequestParam String userName) {
         return ResponseEntity
                 .status(RESERVATION_FOUND.getStatus())
                 .body(CommonResponse.from(RESERVATION_FOUND.getMessage(),
-                        reservationService.getReservationList(memberId)));
+                        reservationService.getReservationList(userName)));
     }
 
     @Operation(summary = "예매 취소", description = "해당 예매를 취소합니다.")
