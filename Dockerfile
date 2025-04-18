@@ -1,11 +1,10 @@
-# 1단계: Gradle로 JAR 빌드
-FROM gradle:7.6.2-jdk17-alpine AS builder
+FROM gradle:7.6.2-jdk17-alpine as builder
 
+USER root
 WORKDIR /app
 COPY . .
-RUN gradle build -x test
+RUN gradle clean build --refresh-dependencies -x test
 
-# 2단계: 빌드된 JAR을 실행용 이미지에 복사
 FROM bellsoft/liberica-openjdk-alpine:17
 
 WORKDIR /app
