@@ -51,7 +51,7 @@ pipeline {
                         rm -rf gitops
                         git clone https://$GITOPS_TOKEN@github.com/yeonjeong2/gitops.git
                         cd gitops
-                        sed -i "s|image: duswjd/cgv-server:.*|image: duswjd/cgv-server:${IMAGE_TAG}|" cgv/deployment.yaml
+                        sed -i "s|image: duswjd/cgv-server:.*|image: duswjd/cgv-server:${IMAGE_TAG}|" cgv-server/deployment.yaml
                         git add cgv/deployment.yaml
                         git commit -m "Update image tag to ${IMAGE_TAG}"
                         git push https://$GITOPS_TOKEN@github.com/yeonjeong2/gitops.git
