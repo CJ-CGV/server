@@ -1,62 +1,60 @@
 pipeline {
-  agent any
+    agent any
 
-  environment {
-    IMAGE_NAME     = "duswjd/cgv-server"  // DockerHub 이미지 이름
-    IMAGE_TAG      = ""  // 이후 단계에서 커밋 해시로 설정
-    GITOPS_REPO    = "https://github.com/CJ-CGV/gitops.git"
-    GITOPS_BRANCH  = "main"
-    DEPLOYMENT_YAML_PATH = "/root/gitops/cgv-server/deployment.yaml"
-  }
-
-  stages {
-    stage('Clone Source') {
-      steps {
-        git credentialsId: 'git-creds-server', url: 'https://github.com/CJ-CGV/server.git', branch: 'main'
-      }
+    environment {
+        IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+        DOCKER_IMAGE = "duswjd/cgv-server:${IMAGE_TAG}"
     }
 
-    stage('Build Docker Image') {
-      steps {
-        script {
-          IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-          env.IMAGE_TAG = IMAGE_TAG
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git credentialsId: 'git-creds-server',
+                    url: 'https://github.com/CJ-CGV/server.git',
+                    branch: 'main'
+            }
         }
-        sh """
-          docker build -t $IMAGE_NAME:$IMAGE_TAG .
-          docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
-        """
-      }
-    }
 
-    stage('Push Docker Image') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-          sh """
-            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker push $IMAGE_NAME:$IMAGE_TAG
-            docker push $IMAGE_NAME:latest
-          """
+        stage('Build JAR') {
+            steps {
+                sh './gradlew clean build -x test --no-daemon'
+            }
         }
-      }
-    }
 
-    stage('Update GitOps Deployment') {
-      steps {
-        dir('gitops') {
-          git credentialsId: 'git-creds', url: "$GITOPS_REPO", branch: "$GITOPS_BRANCH"
-
-          sh """
-            sed -i 's|image: .*|image: $IMAGE_NAME:$IMAGE_TAG|' $DEPLOYMENT_YAML_PATH
-
-            git config user.name "jenkins-ci"
-            git config user.email "jenkins@ci.com"
-
-            git commit -am "Update image tag to $IMAGE_TAG"
-            git push origin $GITOPS_BRANCH
-          """
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $DOCKER_IMAGE .'
+            }
         }
-      }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                    sh '''
+                        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                        docker push $DOCKER_IMAGE
+                    '''
+                }
+            }
+        }
+
+        stage('Update GitOps Repository') {
+            steps {
+                withCredentials([string(credentialsId: 'gitops', variable: 'GITOPS_TOKEN')]) {
+                    sh '''
+                        git config --global user.email "jenkins@ci.com"
+                        git config --global user.name "jenkins"
+
+                        rm -rf gitops
+                        git clone https://$GITOPS_TOKEN@github.com/yeonjeong2/gitops.git
+                        cd gitops
+                        sed -i "s|image: duswjd/cgv-server:.*|image: duswjd/cgv-server:${IMAGE_TAG}|" cgv/deployment.yaml
+                        git add cgv/deployment.yaml
+                        git commit -m "Update image tag to ${IMAGE_TAG}"
+                        git push https://$GITOPS_TOKEN@github.com/yeonjeong2/gitops.git
+                    '''
+                }
+            }
+        }
     }
-  }
 }
