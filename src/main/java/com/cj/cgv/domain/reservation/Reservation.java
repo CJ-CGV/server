@@ -11,9 +11,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "reservation", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "seat_id")
-})
 public class Reservation {
 
     @Id
