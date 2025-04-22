@@ -27,6 +27,7 @@ public class ReservationService {
             seat.soldout();
         else throw new CustomException(StatusCode.SEAT_SOLD_OUT);
 
+
         Reservation reservation= Reservation.builder()
                 .userName(userName)
                 .status(Status.RESERVED)
