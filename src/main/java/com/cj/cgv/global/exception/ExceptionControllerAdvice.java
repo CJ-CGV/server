@@ -2,6 +2,8 @@ package com.cj.cgv.global.exception;
 
 
 import com.cj.cgv.global.common.ErrorResponse;
+import com.cj.cgv.global.common.StatusCode;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -57,6 +59,17 @@ public class ExceptionControllerAdvice {
                 .build();
 
         return ResponseEntity.status(e.getStatusCode().getStatus())
+                .body(errorResponse);
+    }
+
+    // 좌석 예매 실패 시 락 획득에 실패
+    @ExceptionHandler(PessimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponse> handleCustomException(PessimisticLockingFailureException e){
+        ErrorResponse errorResponse=ErrorResponse.builder()
+                .message(StatusCode.SEAT_SOLD_OUT.getMessage())
+                .build();
+
+        return ResponseEntity.status(StatusCode.SEAT_SOLD_OUT.getStatus())
                 .body(errorResponse);
     }
 }
