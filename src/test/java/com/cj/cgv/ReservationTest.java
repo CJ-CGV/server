@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@ActiveProfiles("dev")
+@ActiveProfiles("mirror")
 public class ReservationTest {
     @Autowired
     private SeatService seatService;
