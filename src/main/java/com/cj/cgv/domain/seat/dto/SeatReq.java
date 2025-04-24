@@ -12,6 +12,11 @@ public class SeatReq {
 
     private Integer column;
 
+    public SeatReq(Integer row, Integer column) {
+        this.row = row;
+        this.column = column;
+    }
+
     public Seat toEntity(int row, int column, Schedule schedule){
         return Seat.builder()
                 .rowIndex(row)
