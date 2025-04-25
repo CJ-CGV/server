@@ -15,7 +15,7 @@ import static com.cj.cgv.global.common.StatusCode.*;
 @Tag(name = "[영화]", description = "영화 관리")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/movies")
+@RequestMapping("/movies")
 public class MovieController {
     private final MovieService movieService;
 

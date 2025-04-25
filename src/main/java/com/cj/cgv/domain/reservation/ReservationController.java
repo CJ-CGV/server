@@ -16,7 +16,7 @@ import static com.cj.cgv.global.common.StatusCode.*;
 @Tag(name = "[예매]", description = "예매 관리")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/reservations")
+@RequestMapping("/reservations")
 public class ReservationController {
     private final ReservationService reservationService;
 

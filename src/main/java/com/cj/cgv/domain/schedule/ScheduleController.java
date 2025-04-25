@@ -16,7 +16,7 @@ import static com.cj.cgv.global.common.StatusCode.*;
 @Tag(name = "[영화 일정]", description = "영화 일정 관리")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/schedules")
+@RequestMapping("/schedules")
 public class ScheduleController {
     private final ScheduleService scheduleService;
 

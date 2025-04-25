@@ -16,7 +16,7 @@ import static com.cj.cgv.global.common.StatusCode.*;
 @Tag(name = "[영화 좌석]", description = "영화 좌석 관리")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/seats")
+@RequestMapping("/seats")
 public class SeatController {
     private final SeatService seatService;
 
