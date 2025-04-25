@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
         DOCKER_IMAGE = "duswjd/cgv-server:${IMAGE_TAG}"
+        APP_PROPERTIES = credentials('app-properties1')
     }
 
     stages {
@@ -14,6 +15,18 @@ pipeline {
                     branch: 'main'
             }
         }
+
+        stage('✅ application.properties 생성') {
+              steps {
+                sh '''
+                cd /server
+                echo "📁 src/main/resources 생성"
+                mkdir -p src/main/resources
+                cp "$APP_PROPERTIES" ./src/main/resources/application.properties
+                '''
+              }
+            }
+
 
         stage('Build JAR') {
             steps {
