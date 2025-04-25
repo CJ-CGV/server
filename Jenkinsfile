@@ -19,9 +19,8 @@ pipeline {
         stage('✅ application.properties 생성') {
               steps {
                 sh '''
-                cd ./server
-                echo "📁 src/main/resources 생성"
-                mkdir -p src/main/resources
+                echo "📁 ./src/main/resources 생성"
+                mkdir -p ./src/main/resources
                 cp "$APP_PROPERTIES" ./src/main/resources/application.properties
                 '''
               }
