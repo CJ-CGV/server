@@ -39,6 +39,11 @@ public enum StatusCode {
     RESERVATION_CREATE(OK, "예매 완료"),
     RESERVATION_DELETE(OK,"예매 취소 완료"),
 
+    // Redis Queue
+    QUEUE_USER_INSERT(OK,"대기열 입장"),
+    QUEUE_USER_DELETE(OK,"대기열 퇴장"),
+    QUEUE_USER_NOT_EXIST(NOT_FOUND,"대기열에 유저가 존재하지 않습니다."),
+
 
 
     /* 400 BAD_REQUEST : 잘못된 요청 */
