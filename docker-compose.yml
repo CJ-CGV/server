@@ -17,14 +17,15 @@ services:
     image: confluentinc/cp-kafka:7.5.3
     platform: linux/amd64
     ports:
-      - "20092:9092"
+      - "9092:9092"  # 내부 포트 9092 외부 포트 9092
+      - "9093:9093"  # 외부 포트 9093 추가
     volumes:
       - ./data/kafka-data/kafka-1:/var/lib/kafka/data
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-1:29092,EXTERNAL://localhost:20092
-      KAFKA_LISTENERS: INTERNAL://:29092,CONTROLLER://:29093,EXTERNAL://0.0.0.0:20092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-1:9092,EXTERNAL://localhost:9093  # 외부에서 접근하는 포트 9093
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,CONTROLLER://:29093,EXTERNAL://0.0.0.0:9093  # EXTERNAL 리스너 포트 9093
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka-1:29093
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
@@ -40,7 +41,7 @@ services:
     restart: always
     environment:
       KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-1:29092
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-1:9092  # Kafka UI가 접근하는 Kafka 서버 포트도 9092로 변경
     depends_on:
       - kafka-1
 
