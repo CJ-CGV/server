@@ -43,6 +43,7 @@ dependencies {
 
 	// Kafka
 	implementation 'org.springframework.kafka:spring-kafka'
+
 	
 }
 
