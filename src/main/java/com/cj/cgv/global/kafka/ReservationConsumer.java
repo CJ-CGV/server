@@ -16,6 +16,10 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -23,31 +27,82 @@ public class ReservationConsumer {
     private final SeatRepository seatRepository;
     private final ReservationRepository reservationRepository;
 
+    private CountDownLatch latch;
+    private AtomicInteger successCount;
+    private List<Exception> exceptionList;
+
+    public void setLatch(CountDownLatch latch) {
+        this.latch = latch;
+    }
+
+    public void setSuccessCount(AtomicInteger successCount) {
+        this.successCount = successCount;
+    }
+
+    public void setExceptionList(List<Exception> exceptionList) {
+        this.exceptionList = exceptionList;
+    }
+
     @KafkaListener(topicPattern = "reservation-.*", groupId = "reservation-group")
     @Transactional
-    public void consume(ConsumerRecord<String, ReservationEvent> record) {
-        ReservationEvent request = record.value();
+    public void consumeTest(ConsumerRecord<String, ReservationEvent> record) {
+        try {
+            ReservationEvent request = record.value();
 
-        Seat seat= seatRepository.findById(request.getSeatId()).orElseThrow(() -> new CustomException(StatusCode.SEAT_SOLD_OUT));
+            Seat seat= seatRepository.findById(request.getSeatId()).orElseThrow(() -> new CustomException(StatusCode.SEAT_SOLD_OUT));
 
-        log.info("예약 이벤트 수신: 사용자={}, 좌석ID={}, 스케줄ID={}", request.getUserName(), seat.getId(), request.getScheduleId());
+            log.info("예약 이벤트 수신: 사용자={}, 좌석ID={}, 스케줄ID={}", request.getUserName(), seat.getId(), request.getScheduleId());
 
-        if(!seat.getIsReserved())
-            seat.soldout();
-        else {
-            log.warn("이미 예약된 좌석입니다. seatId={}", seat.getId());
-            throw new CustomException(StatusCode.SEAT_SOLD_OUT);
+            if(!seat.getIsReserved())
+                seat.soldout();
+            else {
+                log.warn("이미 예약된 좌석입니다. seatId={}", seat.getId());
+                throw new CustomException(StatusCode.SEAT_SOLD_OUT);
+            }
+
+
+            Reservation reservation= Reservation.builder()
+                    .userName(request.getUserName())
+                    .status(Status.RESERVED)
+                    .seat(seat)
+                    .build();
+
+            reservationRepository.save(reservation);
+
+            log.info("예약 저장 완료: 사용자={}, 좌석ID={}", request.getUserName(), seat.getId());
+            successCount.incrementAndGet();
+        } catch (Exception e) {
+            exceptionList.add(e);
+        } finally {
+            latch.countDown();
         }
-
-
-        Reservation reservation= Reservation.builder()
-                .userName(request.getUserName())
-                .status(Status.RESERVED)
-                .seat(seat)
-                .build();
-
-        reservationRepository.save(reservation);
-
-        log.info("예약 저장 완료: 사용자={}, 좌석ID={}", request.getUserName(), seat.getId());
     }
+
+//    @KafkaListener(topicPattern = "reservation-.*", groupId = "reservation-group")
+//    @Transactional
+//    public void consume(ConsumerRecord<String, ReservationEvent> record) {
+//        ReservationEvent request = record.value();
+//
+//        Seat seat= seatRepository.findById(request.getSeatId()).orElseThrow(() -> new CustomException(StatusCode.SEAT_SOLD_OUT));
+//
+//        log.info("예약 이벤트 수신: 사용자={}, 좌석ID={}, 스케줄ID={}", request.getUserName(), seat.getId(), request.getScheduleId());
+//
+//        if(!seat.getIsReserved())
+//            seat.soldout();
+//        else {
+//            log.warn("이미 예약된 좌석입니다. seatId={}", seat.getId());
+//            throw new CustomException(StatusCode.SEAT_SOLD_OUT);
+//        }
+//
+//
+//        Reservation reservation= Reservation.builder()
+//                .userName(request.getUserName())
+//                .status(Status.RESERVED)
+//                .seat(seat)
+//                .build();
+//
+//        reservationRepository.save(reservation);
+//
+//        log.info("예약 저장 완료: 사용자={}, 좌석ID={}", request.getUserName(), seat.getId());
+//    }
 }

@@ -7,14 +7,13 @@ import com.cj.cgv.domain.seat.SeatRepository;
 import com.cj.cgv.domain.seat.SeatService;
 import com.cj.cgv.domain.seat.dto.SeatReq;
 import com.cj.cgv.global.exception.CustomException;
+import com.cj.cgv.global.kafka.ReservationConsumer;
 import com.cj.cgv.global.kafka.ReservationProducer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.PessimisticLockingFailureException;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -40,13 +39,14 @@ public class KafkaTest {
     private ReservationProducer reservationProducer;
 
     @Autowired
+    private ReservationConsumer reservationConsumer;
+
+    @Autowired
     private ReservationRepository reservationRepository;
 
     @Autowired
     private SeatRepository seatRepository;
 
-    @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
 
     private Long seatId;
 
@@ -66,14 +66,19 @@ public class KafkaTest {
 
 
     @Test
-    @DisplayName("좌석 예매 정합성 테스트")
+    @DisplayName("카프카 예매 동시성 제어 테스트")
     void testConcurrentReservation() throws InterruptedException {
-        int numberOfThreads = 100; // 요청 수
+        int numberOfThreads = 1000; // 요청 수
         ExecutorService executorService = Executors.newFixedThreadPool(10); // 동시 처리할 스레드 풀
         CountDownLatch latch = new CountDownLatch(numberOfThreads); // 모든 요청이 끝날 때까지 기다리기 위한 CountDownLatch
         AtomicInteger successCount = new AtomicInteger(0); // 성공한 예약 수
         List<Exception> exceptions = new ArrayList<>(); // 예외를 담을 리스트
         List<Long> responseTimes = new ArrayList<>(); // 각 요청의 응답 시간을 담을 리스트
+
+        // Kafka Consumer에 latch, successCount, exceptionList 주입
+        reservationConsumer.setLatch(latch);
+        reservationConsumer.setSuccessCount(successCount);
+        reservationConsumer.setExceptionList(exceptions);
 
         // 테스트 시작 시간 기록
         long testStartTime = System.nanoTime();
@@ -86,12 +91,6 @@ public class KafkaTest {
                 try {
                     // 예약 요청을 보내고 성공하면 카운트 증가
                     reservationProducer.sendReservationRequest(username,seatId,1L);
-                    successCount.incrementAndGet();
-                } catch (PessimisticLockingFailureException e) {
-                    synchronized (exceptions) {
-                        exceptions.add(e); // 락 실패 예외 처리
-                    }
-
                 } catch (CustomException e) {
                     synchronized (exceptions) {
                         exceptions.add(e); // 사용자 정의 예외 처리
@@ -107,7 +106,6 @@ public class KafkaTest {
                     synchronized (responseTimes) {
                         responseTimes.add(responseTime); // 응답 시간 리스트에 추가
                     }
-                    latch.countDown(); // 하나의 요청이 끝날 때마다 CountDown
                 }
             });
         }
@@ -126,10 +124,14 @@ public class KafkaTest {
         Seat seat = seatRepository.findById(seatId)
                 .orElseThrow(() -> new RuntimeException("Seat not found"));
 
+        // 예외 종류 출력
+        exceptions.forEach(ex -> System.out.println("예외 종류: " + ex.getClass().getSimpleName()));
+
         // 테스트 결과 출력
         System.out.println("성공한 예약 수: " + successCount.get());
         System.out.println("좌석 예약 여부: " + seat.getIsReserved());
         System.out.println("발생한 예외 수: " + exceptions.size());
+
 
         // 응답 시간 계산
         List<Long> responseTimeList = new ArrayList<>(responseTimes);
@@ -137,8 +139,6 @@ public class KafkaTest {
         long slowestResponse = responseTimeList.stream().max(Long::compare).orElse(0L) / 1_000_000; // nanoseconds -> milliseconds
         double averageResponse = responseTimeList.stream().mapToLong(Long::longValue).average().orElse(0) / 1_000_000.0; // nanoseconds -> milliseconds
 
-        // 예외 종류 출력
-        exceptions.forEach(ex -> System.out.println("예외 종류: " + ex.getClass().getSimpleName()));
 
         // 응답 시간 관련 정보 출력
         System.out.println("최단 응답 시간: " + fastestResponse + "ms");

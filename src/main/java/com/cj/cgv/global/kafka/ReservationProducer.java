@@ -18,7 +18,7 @@ public class ReservationProducer {
         String topic = "reservation-" + scheduleId;
         kafkaTemplate.send(topic, seatId.toString(), request); // seatId 기준 파티셔닝
 
-        log.info("예약 요청 전송됨: 사용자={}, 좌석ID={}, 스케줄ID={}, 토픽={}",
+        log.info("예메 요청 전송됨: 사용자={}, 좌석ID={}, 스케줄ID={}, 토픽={}",
                 userName, seatId, scheduleId, topic);
     }
 }
