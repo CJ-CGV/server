@@ -4,6 +4,7 @@ import com.cj.cgv.global.common.StatusCode;
 import com.cj.cgv.global.exception.CustomException;
 import com.cj.cgv.global.redis.dto.QueueRes;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class WaitingQueueService {
     private final StringRedisTemplate redisTemplate;
 
@@ -20,6 +22,14 @@ public class WaitingQueueService {
         String queueKey = getWaitingQueueKey(scheduleId);
         double timestamp = System.currentTimeMillis();
         redisTemplate.opsForZSet().add(queueKey, username, timestamp);
+    }
+
+    // 유저를 대기열에 추가(Kafka offset 이용)
+    public void enterWaitingQueueWithKafka(Long offset, String username, Long scheduleId) {
+        String queueKey = getWaitingQueueKey(scheduleId);
+        redisTemplate.opsForZSet().add(queueKey, username, offset);
+
+        log.info("대기열 진입: 사용자={}, 오프셋={}, 스케줄ID={}", username, offset, scheduleId);
     }
 
     // 유저의 현재 대기 순서 확인
