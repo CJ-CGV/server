@@ -27,4 +27,14 @@ public class QueueConsumer {
 
         waitingQueueService.enterWaitingQueueWithKafka(offset, request.getUserName(), request.getScheduleId());
     }
+
+
+//    @KafkaListener(topicPattern = "reservation-queue", groupId = "reservation-group")
+//    @Transactional
+//    public void consumeTest(ConsumerRecord<String, ReservationEvent> record) {
+//        Long offset= record.offset();
+//        ReservationEvent request = record.value();
+//
+//        waitingQueueService.enterWaitingQueueWithKafka(offset, request.getUserName(), request.getScheduleId());
+//    }
 }
