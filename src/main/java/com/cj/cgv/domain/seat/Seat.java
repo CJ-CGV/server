@@ -39,4 +39,6 @@ public class Seat {
     }
 
     public void soldout(){this.isReserved=true;}
+
+    public void cancle(){this.isReserved=false;}
 }

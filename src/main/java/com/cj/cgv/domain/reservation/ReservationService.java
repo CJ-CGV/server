@@ -21,8 +21,7 @@ public class ReservationService {
 
     @Transactional
     public ReservationRes createReservation(String userName, Long seatId){
-        Seat seat=reservationRepository.findSeatBySeatIdWithRock(seatId)
-                .orElseThrow(() -> new CustomException(StatusCode.SEAT_NOT_EXIST));
+        Seat seat= findSeatBySeatId(seatId);
 
         if(!seat.getIsReserved())
             seat.soldout();
@@ -55,6 +54,8 @@ public class ReservationService {
         if(reservation.getStatus()==Status.RESERVED)
             reservation.cancel();
         else throw new CustomException(StatusCode.RESERVATION_IS_DELETED);
+
+        reservation.getSeat().cancle();
     }
     
 
