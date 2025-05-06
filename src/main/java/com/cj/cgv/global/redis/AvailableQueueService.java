@@ -14,7 +14,7 @@ public class AvailableQueueService {
     private final StringRedisTemplate redisTemplate;
     private final WaitingQueueService waitingQueueService;
 
-    private static final long ALLOW_DURATION_MILLIS = 5 * 1 * 1000; // 5초
+    private static final long ALLOW_DURATION_MILLIS = 60 * 1000; // 60초
 
     // 유저를 available queue에 추가 (입장 허용)
     public void allowUser(String username, Long scheduleId) {

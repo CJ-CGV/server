@@ -19,11 +19,11 @@ public class ReservationQueueScheduler {
 
 
     // 대기열에서 일정 인원 꺼내 입장 허용
-    @Scheduled(fixedRate = 5 * 1000)
+    @Scheduled(fixedRate = 10 * 1000)
     public void moveUsersFromWaitingToAvailable() {
         Set<Long> allScheduleIds = waitingQueueService.getAllScheduleIds();
 
-        int moveCount = 100; // 한 번에 100명씩 입장 허용
+        int moveCount = 1; // 한 번에 1명씩 입장 허용
 
         for (Long scheduleId : allScheduleIds) {
 
@@ -44,7 +44,7 @@ public class ReservationQueueScheduler {
     }
 
     // 예매가능 열에서 만료된 유저 제거
-    @Scheduled(fixedRate = 5 * 1000)
+    @Scheduled(fixedRate = 10 * 1000)
     public void removeExpiredUsersFromAvailableQueue() {
         Set<Long> allScheduleIds = availableQueueService.getAllScheduleIds();
 

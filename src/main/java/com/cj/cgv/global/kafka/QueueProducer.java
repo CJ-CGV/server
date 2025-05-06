@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class QueueProducer{
-    private final KafkaTemplate<String, ReservationEvent> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void sendReservationEvent(Long scheduleId, String userName) {
         ReservationEvent request = new ReservationEvent(scheduleId, userName);
