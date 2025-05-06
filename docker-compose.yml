@@ -59,6 +59,20 @@ services:
     depends_on:
       - kafka-1
 
+  controller:
+    image: ngrinder/controller:3.5.5-p1
+    ports:
+      - "9000:80"
+      - "16001:16001"
+      - "12000-12009:12000-12009"
+    volumes:
+      - ngrinder_data:/opt/ngrinder-controller
+  agent:
+    image: ngrinder/agent:3.5.5-p1
+    links:
+      - controller
+
 volumes:
   cgv_data:
   redis_data:
+  ngrinder_data:
