@@ -21,7 +21,8 @@ public class ReservationService {
 
     @Transactional
     public ReservationRes createReservation(String userName, Long seatId){
-        Seat seat= findSeatBySeatId(seatId);
+        Seat seat= reservationRepository.findSeatBySeatIdWithRock(seatId)
+                .orElseThrow(() -> new CustomException(StatusCode.SEAT_NOT_EXIST));
 
         if(!seat.getIsReserved())
             seat.soldout();
