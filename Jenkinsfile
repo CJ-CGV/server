@@ -48,15 +48,21 @@ pipeline {
 
         stage('Push Docker Image to ECR') {
             steps {
-                sh '''
-                    echo "🔐 ECR 로그인"
-                    aws ecr get-login-password | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                withCredentials([usernamePassword(credentialsId: 'aws-ecr-creds', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh '''
+                        echo "🔐 ECR 로그인"
+                        aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+                        aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+                        aws configure set default.region ${AWS_REGION}
+                        
+                        aws ecr get-login-password | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
-                    echo "🐳 Docker 이미지 푸시 중..."
-                    docker push $DOCKER_IMAGE
-                '''
-    }
-}
+                        echo "🐳 Docker 이미지 푸시 중..."
+                        docker push $DOCKER_IMAGE
+                    '''
+                }
+            }
+        }
 
         stage('Update GitOps Repository') {
             steps {
