@@ -1,38 +1,36 @@
 # CGV 영화 예매 서비스
 
----
 대용량 트래픽에 대응할 수 있는 MSA 구조 영화 예매 서비스입니다.
 
 
-
+<br>
 
 # ERD
 
----
-- Movie Service
+- **Movie Service**
 
   
 ![image](https://github.com/user-attachments/assets/8a482b34-91e0-45ae-91e7-07bec17eca48)
 
 
-- Reservation Service
+- **Reservation Service**
 
 
 ![image](https://github.com/user-attachments/assets/e7180c75-f749-4794-b703-732c7e4a7c25)
 
 
+<br>
 
 # 🗺️아키텍처
 
----
 
 ![image](https://github.com/user-attachments/assets/c5ad366c-97ae-48da-b665-618efc14a5e9)
 
 
+<br>
 
 # 💡사용 기술
 
----
 
 - Java 17
 - SpringBoot 3.4.4
@@ -43,10 +41,10 @@
 - Ngrinder
 - Gradle
   
+<br>
 
 # 📌개발 과정
 
----
 
 - 동시 요청 속 정합성 문제 인식 및 데드락 원인 분석 - https://kangwook.tistory.com/46
 - 데드락 방지와 정합성 해결을 위한 낙관적 락, 비관적 락 비교 및 비관적 락의 성능 개선 - https://kangwook.tistory.com/47
