@@ -24,9 +24,15 @@ public class Movie {
     @Column(name = "release_date", nullable = false)
     private LocalDate releaseDate;
 
+    @Column(name = "goods_count", nullable = false)
+    private Long goodsCount;
+
     @Builder
-    public Movie(String title, LocalDate releaseDate) {
+    public Movie(String title, LocalDate releaseDate, Long goodsCount) {
         this.title = title;
         this.releaseDate = releaseDate;
+        this.goodsCount = goodsCount;
     }
+
+    public void reduceGoodsCount(){ this.goodsCount--; }
 }

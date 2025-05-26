@@ -35,8 +35,11 @@ public class ReservationService {
                 .seat(seat)
                 .build();
 
-
-        return ReservationRes.from(reservationRepository.save(reservation));
+        if(reservation.getSeat().getSchedule().getMovie().getGoodsCount() >= 1){
+            reservation.getSeat().getSchedule().getMovie().reduceGoodsCount();
+            return ReservationRes.from(reservationRepository.save(reservation),true);
+        }
+        else return ReservationRes.from(reservationRepository.save(reservation),false);
     }
 
     public List<ReservationRes> getReservationList(String userName){

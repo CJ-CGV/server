@@ -11,11 +11,13 @@ import java.time.LocalDate;
 public class MovieReq {
     private String title;
     private LocalDate releaseDate;
+    private Long goodsCount;
 
     public Movie toEntity(){
         return Movie.builder()
                 .title(title)
                 .releaseDate(releaseDate)
+                .goodsCount(goodsCount)
                 .build();
     }
 }
