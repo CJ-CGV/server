@@ -17,7 +17,6 @@ public class ReservationQueueScheduler {
     private final WaitingQueueService waitingQueueService;
     private final AvailableQueueService availableQueueService;
 
-
     // 대기열에서 일정 인원 꺼내 입장 허용
     @Scheduled(fixedRate = 5 * 1000)
     public void moveUsersFromWaitingToAvailable() {
