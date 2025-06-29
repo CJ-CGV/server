@@ -14,13 +14,15 @@
 
 # 🗺️ 서비스 아키텍처
 
-![image.png](attachment:833149af-c0fb-4cd6-a70c-35dd33865e85:image.png)
+![image](https://github.com/user-attachments/assets/3df3cb37-021a-4945-85c6-8565c110d9fa)
+
 
 <br>
 
 # 🌐 배포 아키텍처
 
-![image.png](attachment:5830f768-f62c-4d3a-9a3a-5701cddd4d60:image.png)
+![image](https://github.com/user-attachments/assets/4e2be90b-ad8c-4a7d-bc5a-47bffe3bfc81)
+
 <br>
 
 # 💡사용 기술
