@@ -7,16 +7,7 @@
 
 # ERD
 
-- **Movie Service**
-
-  
-![image](https://github.com/user-attachments/assets/8a482b34-91e0-45ae-91e7-07bec17eca48)
-
-
-- **Reservation Service**
-
-
-![image](https://github.com/user-attachments/assets/e7180c75-f749-4794-b703-732c7e4a7c25)
+![image](https://github.com/user-attachments/assets/b2a72ba6-d309-43db-b00a-d66c073973e3)
 
 
 <br>
