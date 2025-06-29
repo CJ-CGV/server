@@ -12,12 +12,15 @@
 
 <br>
 
-# 🗺️아키텍처
+# 🗺️ 서비스 아키텍처
 
+![image.png](attachment:833149af-c0fb-4cd6-a70c-35dd33865e85:image.png)
 
-![image](https://github.com/user-attachments/assets/c5ad366c-97ae-48da-b665-618efc14a5e9)
+<br>
 
+# 🌐 배포 아키텍처
 
+![image.png](attachment:5830f768-f62c-4d3a-9a3a-5701cddd4d60:image.png)
 <br>
 
 # 💡사용 기술
